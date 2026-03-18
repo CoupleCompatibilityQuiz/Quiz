@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Couple Compatibility Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --pink-light: #ffd6e0;
+    --pink-mid:   #f9a8c0;
+    --pink-main:  #e8729a;
+    --pink-deep:  #d4547e;
+    --pink-pale:  #fff0f5;
+    --pink-soft:  #fce8f0;
+    --text-dark:  #5a2a3a;
+    --text-mid:   #9e5570;
+    --text-light: #c98aaa;
+    --white:      #ffffff;
+    --green:      #4caf82;
+    --amber:      #d4945a;
+    --red-low:    #e07070;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #fff5f8;
+    color: var(--text-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .bg-blob { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
+  .bg-blob-1 { width:500px;height:500px;top:-180px;right:-180px;background:radial-gradient(circle,rgba(249,168,192,.25) 0%,transparent 70%); }
+  .bg-blob-2 { width:420px;height:420px;bottom:-140px;left:-140px;background:radial-gradient(circle,rgba(232,114,154,.15) 0%,transparent 70%); }
+  .bg-blob-3 { width:250px;height:250px;top:40%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,214,224,.20) 0%,transparent 70%); }
+  .sparkle { position:fixed;pointer-events:none;z-index:0;font-size:1.1rem;opacity:.35;color:var(--pink-main);animation:twinkle 3s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100%{opacity:.2;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
+  .sparkle:nth-child(2){animation-delay:.8s}
+  .sparkle:nth-child(3){animation-delay:1.6s}
+  .sparkle:nth-child(4){animation-delay:2.4s}
+  .screen { display:none;position:relative;z-index:1; }
+  .screen.active { display:flex; }
+
+  /* WELCOME */
+  #welcome { flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 20px;text-align:center; }
+  .logo-img { width:190px;height:190px;object-fit:contain;filter:drop-shadow(0 8px 24px rgba(232,114,154,.25));margin-bottom:4px; }
+  .brand-script { font-family:'Great Vibes',cursive;font-size:clamp(2.4rem,7vw,3.4rem);color:var(--pink-main);line-height:1.1;margin-bottom:4px; }
+  .brand-quiz { font-family:'Nunito',sans-serif;font-size:.78rem;letter-spacing:5px;text-transform:uppercase;color:var(--pink-deep);font-weight:700;margin-bottom:36px; }
+  .welcome-card { background:white;border-radius:28px;padding:40px 36px;max-width:500px;width:100%;box-shadow:0 12px 50px rgba(232,114,154,.12),0 2px 8px rgba(232,114,154,.08);border:1.5px solid rgba(249,168,192,.35); }
+  .welcome-card h2 { font-family:'Great Vibes',cursive;font-size:1.9rem;color:var(--pink-deep);margin-bottom:16px;line-height:1.2; }
+  .pink-divider { display:flex;align-items:center;gap:10px;justify-content:center;margin:16px 0 20px; }
+  .pink-divider span { display:block;height:1.5px;width:48px;background:linear-gradient(90deg,transparent,var(--pink-mid));border-radius:2px; }
+  .pink-divider span:last-child { background:linear-gradient(90deg,var(--pink-mid),transparent); }
+  .pink-divider .heart-small { color:var(--pink-main);font-size:1rem; }
+  .welcome-card p { font-size:.93rem;line-height:1.75;color:var(--text-mid);margin-bottom:12px; }
+  .note-box { background:var(--pink-soft);border-radius:14px;padding:14px 18px;font-size:.82rem;color:var(--text-light);line-height:1.6;border:1px solid rgba(249,168,192,.4);margin-top:8px;margin-bottom:20px; }
+  .start-btn { display:inline-block;margin-top:8px;padding:16px 52px;background:linear-gradient(135deg,var(--pink-main) 0%,var(--pink-deep) 100%);color:white;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border:none;border-radius:60px;cursor:pointer;box-shadow:0 8px 28px rgba(212,84,126,.35);transition:transform .2s,box-shadow .2s; }
+  .start-btn:hover { transform:translateY(-3px);box-shadow:0 14px 38px rgba(212,84,126,.42); }
+
+  /* QUIZ */
+  #quiz { flex-direction:column;align-items:center;min-height:100vh;padding:28px 20px 60px; }
+  .quiz-header { width:100%;max-width:560px;margin-bottom:28px; }
+  .quiz-top { display:flex;justify-content:space-between;align-items:center;margin-bottom:10px; }
+  .quiz-logo-small { font-family:'Great Vibes',cursive;font-size:1.4rem;color:var(--pink-main); }
+  .progress-label { font-size:.75rem;color:var(--text-light);letter-spacing:.5px;font-weight:600; }
+  .progress-bar-wrap { height:6px;background:rgba(249,168,192,.25);border-radius:10px;overflow:hidden; }
+  .progress-bar-fill { height:100%;background:linear-gradient(90deg,var(--pink-mid),var(--pink-deep));border-radius:10px;transition:width .5s ease;width:0%; }
+  .question-card { background:white;border-radius:28px;padding:36px 32px;max-width:560px;width:100%;box-shadow:0 10px 48px rgba(232,114,154,.10),0 2px 8px rgba(232,114,154,.06);border:1.5px solid rgba(249,168,192,.30);animation:floatUp .35s ease; }
+  @keyframes floatUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  .q-topic { font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--pink-main);margin-bottom:8px;font-weight:700; }
+  .q-text { font-family:'Nunito',sans-serif;font-size:clamp(1.05rem,2.8vw,1.25rem);font-weight:600;color:var(--text-dark);line-height:1.5;margin-bottom:26px; }
+  .options { display:flex;flex-direction:column;gap:10px; }
+  .option-btn { display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:var(--pink-pale);border:2px solid transparent;border-radius:16px;cursor:pointer;text-align:left;transition:all .2s ease;font-family:'Nunito',sans-serif;font-size:.9rem;line-height:1.5;color:var(--text-mid);width:100%;font-weight:400; }
+  .option-btn:hover { border-color:var(--pink-mid);background:white;color:var(--text-dark);transform:translateX(3px); }
+  .option-btn.selected { border-color:var(--pink-main);background:white;color:var(--text-dark);box-shadow:0 4px 18px rgba(232,114,154,.18); }
+  .opt-letter { flex-shrink:0;width:28px;height:28px;border-radius:50%;background:rgba(232,114,154,.12);color:var(--pink-main);font-weight:700;font-size:.78rem;display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s; }
+  .option-btn.selected .opt-letter, .option-btn:hover .opt-letter { background:var(--pink-main);color:white; }
+  .next-btn { margin-top:24px;width:100%;padding:15px;background:linear-gradient(135deg,var(--pink-main),var(--pink-deep));color:white;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border:none;border-radius:60px;cursor:pointer;box-shadow:0 4px 18px rgba(212,84,126,.22);transition:transform .2s,box-shadow .2s,opacity .2s;opacity:.35;pointer-events:none; }
+  .next-btn.enabled { opacity:1;pointer-events:all; }
+  .next-btn.enabled:hover { transform:translateY(-2px);box-shadow:0 10px 30px rgba(212,84,126,.35); }
+
+  /* RESULTS */
+  #results { flex-direction:column;align-items:center;min-height:100vh;padding:36px 20px 80px; }
+  .results-brand { font-family:'Great Vibes',cursive;font-size:2rem;color:var(--pink-main);margin-bottom:28px;text-align:center; }
+  .score-card { background:linear-gradient(145deg,var(--pink-main) 0%,var(--pink-deep) 55%,#b8426a 100%);border-radius:28px;padding:44px 36px;max-width:540px;width:100%;text-align:center;color:white;box-shadow:0 16px 56px rgba(212,84,126,.30),0 4px 16px rgba(212,84,126,.15);margin-bottom:28px;position:relative;overflow:hidden; }
+  .score-card::before { content:'♥';position:absolute;font-size:260px;opacity:.06;top:-60px;right:-40px;line-height:1; }
+  .score-card::after { content:'✦  ✦  ✦';position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:.6rem;letter-spacing:8px;opacity:.4; }
+  .score-top-label { font-size:.72rem;letter-spacing:4px;text-transform:uppercase;opacity:.8;margin-bottom:10px;font-weight:600; }
+  .score-number { font-family:'Great Vibes',cursive;font-size:clamp(4.5rem,16vw,7rem);line-height:1;margin-bottom:2px;text-shadow:0 4px 20px rgba(0,0,0,.15); }
+  .score-desc { font-size:1rem;opacity:.92;margin-bottom:18px;font-weight:300;letter-spacing:.3px; }
+  .score-note { font-size:.8rem;opacity:.72;line-height:1.65;max-width:360px;margin:0 auto; }
+  .cta-card { background:white;border-radius:28px;padding:36px 32px;max-width:540px;width:100%;text-align:center;box-shadow:0 10px 48px rgba(232,114,154,.10);border:1.5px solid rgba(249,168,192,.30);margin-bottom:28px; }
+  .cta-card h3 { font-family:'Great Vibes',cursive;font-size:1.8rem;color:var(--pink-deep);margin-bottom:12px; }
+  .cta-card p { font-size:.89rem;color:var(--text-mid);line-height:1.75;margin-bottom:24px; }
+  .gumroad-btn { display:inline-block;padding:17px 50px;background:linear-gradient(135deg,var(--pink-main),var(--pink-deep));color:white;font-family:'Nunito',sans-serif;font-size:.92rem;font-weight:700;letter-spacing:1px;text-decoration:none;border-radius:60px;box-shadow:0 8px 28px rgba(212,84,126,.30);transition:transform .2s,box-shadow .2s; }
+  .gumroad-btn:hover { transform:translateY(-3px);box-shadow:0 14px 38px rgba(212,84,126,.40); }
+  .price-note { margin-top:12px;font-size:.78rem;color:var(--text-light); }
+  .recap-wrap { max-width:540px;width:100%; }
+  .recap-heading { font-family:'Great Vibes',cursive;font-size:1.8rem;color:var(--pink-deep);text-align:center;margin-bottom:6px; }
+  .recap-sub { font-size:.82rem;color:var(--text-light);text-align:center;margin-bottom:22px;line-height:1.6; }
+  .recap-item { background:white;border-radius:18px;padding:18px 20px;margin-bottom:10px;box-shadow:0 3px 16px rgba(232,114,154,.07);border:1px solid rgba(249,168,192,.22); }
+  .recap-q-header { display:flex;align-items:center;gap:9px;margin-bottom:8px; }
+  .recap-num { flex-shrink:0;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--pink-main),var(--pink-deep));color:white;font-size:.68rem;font-weight:700;display:flex;align-items:center;justify-content:center; }
+  .recap-topic { font-size:.68rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--pink-main);font-weight:700; }
+  .recap-question { font-size:.83rem;color:var(--text-mid);margin-bottom:10px;line-height:1.5; }
+  .recap-answer { display:flex;align-items:flex-start;gap:9px;padding:11px 13px;border-radius:12px;font-size:.86rem;line-height:1.5;font-weight:600; }
+  .recap-answer.high   { background:rgba(76,175,130,.09);color:#2d7a55;border:1px solid rgba(76,175,130,.22); }
+  .recap-answer.medium { background:rgba(212,148,90,.09);color:#9e6030;border:1px solid rgba(212,148,90,.22); }
+  .recap-answer.low    { background:rgba(224,112,112,.09);color:#c04040;border:1px solid rgba(224,112,112,.22); }
+  .recap-answer-letter { flex-shrink:0;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:white; }
+  .high .recap-answer-letter   { background:#4caf82; }
+  .medium .recap-answer-letter { background:#d4945a; }
+  .low .recap-answer-letter    { background:#e07070; }
+  .compat-badge { margin-left:auto;flex-shrink:0;font-size:.62rem;letter-spacing:1.5px;text-transform:uppercase;padding:2px 8px;border-radius:20px;font-weight:700;align-self:center; }
+  .high .compat-badge   { background:rgba(76,175,130,.15);color:#2d7a55; }
+  .medium .compat-badge { background:rgba(212,148,90,.15);color:#9e6030; }
+  .low .compat-badge    { background:rgba(224,112,112,.12);color:#c04040; }
+  .cta-bottom { max-width:540px;width:100%;text-align:center;margin-top:32px;padding:32px;background:linear-gradient(135deg,rgba(249,168,192,.12),rgba(232,114,154,.06));border-radius:24px;border:1.5px dashed rgba(249,168,192,.45); }
+  .cta-bottom p { font-family:'Great Vibes',cursive;font-size:1.4rem;color:var(--pink-deep);margin-bottom:18px;line-height:1.6; }
+  @media(max-width:480px) {
+    .welcome-card,.question-card,.cta-card { padding:28px 22px; }
+    .score-card { padding:36px 24px; }
+    .recap-item { padding:16px; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-blob bg-blob-1"></div>
+<div class="bg-blob bg-blob-2"></div>
+<div class="bg-blob bg-blob-3"></div>
+<div class="sparkle" style="top:8%;left:6%">✦</div>
+<div class="sparkle" style="top:14%;right:8%">✦</div>
+<div class="sparkle" style="top:60%;left:4%">✦</div>
+<div class="sparkle" style="bottom:20%;right:6%">✦</div>
+
+<!-- WELCOME -->
+<section id="welcome" class="screen active">
+  <img src="file_0000000080687246bf1bcc7b162e4a48.png" class="logo-img" alt="Couple Compatibility Quiz" onerror="this.style.display='none'"/>
+  <div class="brand-script">Couple Compatibility</div>
+  <div class="brand-quiz">Quiz</div>
+  <div class="welcome-card">
+    <h2>How well do you really work together?</h2>
+    <div class="pink-divider"><span></span><span class="heart-small">♥</span><span></span></div>
+    <p>This 20-question quiz explores how you and your partner navigate arguments, differing opinions, emotional expression, trust, and more.</p>
+    <p>Answer honestly based on how things <em>actually</em> are — not how you'd like them to be. There are no right or wrong answers.</p>
+    <div class="note-box">At the end you'll see your compatibility score and a full recap of every answer you chose. Want the in-depth psychological breakdown? That's available for purchase after the quiz. 🌸</div>
+    <button class="start-btn" onclick="startQuiz()">Begin the Quiz ♥</button>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz" class="screen">
+  <div class="quiz-header">
+    <div class="quiz-top">
+      <span class="quiz-logo-small">Couple Compatibility</span>
+      <span class="progress-label" id="progress-label">Question 1 of 20</span>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-bar"></div></div>
+  </div>
+  <div class="question-card" id="question-card">
+    <div class="q-topic" id="q-topic"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="options" id="options"></div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">Continue →</button>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results" class="screen">
+  <div class="results-brand">Couple Compatibility Quiz</div>
+  <div class="score-card">
+    <div class="score-top-label">Your Compatibility Score</div>
+    <div class="score-number" id="score-pct">—</div>
+    <div class="score-desc" id="score-desc">Calculating...</div>
+    <div class="score-note">This score reflects the patterns in your answers based on relationship psychology research. Scroll down to see a recap of every answer you chose.</div>
+  </div>
+  <div class="cta-card">
+    <h3>What does it all mean?</h3>
+    <p>The full PDF report breaks down every single question — explaining what <strong>all four possible answers</strong> (A, B, C, D) reveal about relationship dynamics, not just the ones you chose. Backed by real psychological research, color-coded by compatibility level.</p>
+    <a class="gumroad-btn" href="https://couplecompatibility.gumroad.com/l/in_depth_answer_explanation" target="_blank">Get Your Full Report ♥</a>
+    <div class="price-note">€9.99 · Instant PDF download</div>
+  </div>
+  <div class="recap-wrap">
+    <div class="recap-heading">Your Answer Recap</div>
+    <div class="recap-sub">Every question you answered — use this as your reference when reading the full PDF report.</div>
+    <div id="recap-list"></div>
+  </div>
+  <div class="cta-bottom">
+    <p>Curious what your answers really reveal about your relationship?</p>
+    <a class="gumroad-btn" href="https://couplecompatibility.gumroad.com/l/in_depth_answer_explanation" target="_blank">Get the Full Breakdown — €9.99</a>
+  </div>
+</section>
+
+<script>
+const questions=[
+  {topic:"Communication Style",text:"When an issue or disagreement arises, how is it usually handled?",options:[{letter:"A",text:"We openly discuss it calmly and try to understand each other.",score:3,compat:"high"},{letter:"B",text:"We discuss it but sometimes avoid uncomfortable topics.",score:2,compat:"medium"},{letter:"C",text:"Arguments tend to escalate quickly and get emotional.",score:1,compat:"low"},{letter:"D",text:"We often ignore it and hope it resolves on its own.",score:0,compat:"low"}]},
+  {topic:"Emotional Expression",text:"How comfortable are you expressing your emotions to your partner?",options:[{letter:"A",text:"Very comfortable; I can share almost anything.",score:3,compat:"high"},{letter:"B",text:"Somewhat comfortable; I share selectively.",score:2,compat:"medium"},{letter:"C",text:"Rarely comfortable; I usually hold back.",score:1,compat:"low"},{letter:"D",text:"Not comfortable at all; I avoid emotional discussions entirely.",score:0,compat:"low"}]},
+  {topic:"Conflict Resolution",text:"After a disagreement, what typically happens between you and your partner?",options:[{letter:"A",text:"We resolve it constructively and reach mutual understanding.",score:3,compat:"high"},{letter:"B",text:"Resolution happens eventually but can take time.",score:2,compat:"medium"},{letter:"C",text:"Conflicts often leave lingering tension or resentment.",score:1,compat:"low"},{letter:"D",text:"Conflicts are rarely resolved; they remain unaddressed.",score:0,compat:"low"}]},
+  {topic:"Emotional Support",text:"How supported do you generally feel by your partner during stressful situations?",options:[{letter:"A",text:"Very supported; I feel heard and understood.",score:3,compat:"high"},{letter:"B",text:"Somewhat supported; help is inconsistent.",score:2,compat:"medium"},{letter:"C",text:"Rarely supported; I mostly manage stress on my own.",score:1,compat:"low"},{letter:"D",text:"Not supported; I feel alone during stressful times.",score:0,compat:"low"}]},
+  {topic:"Time and Attention",text:"How would you describe the quality of time you and your partner spend together?",options:[{letter:"A",text:"High-quality, focused, and mutually enjoyable.",score:3,compat:"high"},{letter:"B",text:"Mostly positive, though occasionally distracted or rushed.",score:2,compat:"medium"},{letter:"C",text:"Often low-quality; we are together physically but not emotionally.",score:1,compat:"low"},{letter:"D",text:"Minimal meaningful time together.",score:0,compat:"low"}]},
+  {topic:"Trust and Reliability",text:"How much do you trust your partner to follow through on commitments?",options:[{letter:"A",text:"Completely; I rarely worry about reliability.",score:3,compat:"high"},{letter:"B",text:"Mostly; occasional lapses occur but are minor.",score:2,compat:"medium"},{letter:"C",text:"Sometimes; I have recurring doubts about consistency.",score:1,compat:"low"},{letter:"D",text:"Rarely or never; trust is a major concern.",score:0,compat:"low"}]},
+  {topic:"Independence vs. Togetherness",text:"How do you and your partner balance personal independence and closeness?",options:[{letter:"A",text:"Very well; we support each other's individuality while maintaining closeness.",score:3,compat:"high"},{letter:"B",text:"Generally well; occasional tension between independence and togetherness.",score:2,compat:"medium"},{letter:"C",text:"Imbalance; one of us often feels smothered or neglected.",score:1,compat:"low"},{letter:"D",text:"Poor balance; independence or closeness is consistently ignored.",score:0,compat:"low"}]},
+  {topic:"Decision-Making",text:"When decisions affect both of you, how does that usually happen?",options:[{letter:"A",text:"We make decisions collaboratively and consider each other's perspective.",score:3,compat:"high"},{letter:"B",text:"Usually collaborative, though compromises may be uneven.",score:2,compat:"medium"},{letter:"C",text:"Decisions are often unilateral or dominated by one partner.",score:1,compat:"low"},{letter:"D",text:"Decisions are avoided or left unresolved.",score:0,compat:"low"}]},
+  {topic:"Affection and Physical Closeness",text:"How aligned are you with your partner regarding affection and physical closeness?",options:[{letter:"A",text:"Very aligned; needs and preferences match closely.",score:3,compat:"high"},{letter:"B",text:"Somewhat aligned; occasional mismatches occur.",score:2,compat:"medium"},{letter:"C",text:"Often misaligned; one partner wants more or less than the other.",score:1,compat:"low"},{letter:"D",text:"Very misaligned; physical or affectionate needs are rarely met.",score:0,compat:"low"}]},
+  {topic:"Handling Stress as a Couple",text:"When external stress (work, finances, family) affects one of you, how does it impact the relationship?",options:[{letter:"A",text:"We support each other and navigate stress together.",score:3,compat:"high"},{letter:"B",text:"We manage most stress effectively, with occasional strain.",score:2,compat:"medium"},{letter:"C",text:"Stress frequently causes tension or distance.",score:1,compat:"low"},{letter:"D",text:"Stress usually leads to conflict or withdrawal.",score:0,compat:"low"}]},
+  {topic:"Expectations of the Relationship",text:"How clear and aligned are you about your expectations from the relationship?",options:[{letter:"A",text:"Very clear and mostly in agreement.",score:3,compat:"high"},{letter:"B",text:"Mostly clear; minor misunderstandings exist.",score:2,compat:"medium"},{letter:"C",text:"Expectations often misaligned; confusion or frustration occurs.",score:1,compat:"low"},{letter:"D",text:"Very unclear; each partner has vastly different expectations.",score:0,compat:"low"}]},
+  {topic:"Feeling Understood",text:"To what extent do you feel understood by your partner on a deeper level?",options:[{letter:"A",text:"Very understood; we deeply recognize each other's thoughts and feelings.",score:3,compat:"high"},{letter:"B",text:"Somewhat understood; occasional misunderstandings occur.",score:2,compat:"medium"},{letter:"C",text:"Rarely understood; significant gaps in understanding exist.",score:1,compat:"low"},{letter:"D",text:"Not understood; our perspectives rarely align.",score:0,compat:"low"}]},
+  {topic:"Adaptability and Change",text:"How does your relationship typically respond to changes or challenges over time?",options:[{letter:"A",text:"Adaptable; we navigate change together effectively.",score:3,compat:"high"},{letter:"B",text:"Generally adaptable; occasional difficulty adjusting.",score:2,compat:"medium"},{letter:"C",text:"Struggles with change; challenges often strain the relationship.",score:1,compat:"low"},{letter:"D",text:"Resistant to change; challenges frequently cause breakdowns.",score:0,compat:"low"}]},
+  {topic:"Overall Relationship Dynamic",text:"When you reflect on your relationship as a whole, how would you describe its general pattern?",options:[{letter:"A",text:"Stable, positive, mutually supportive, and resilient.",score:3,compat:"high"},{letter:"B",text:"Mostly positive, with some recurring friction.",score:2,compat:"medium"},{letter:"C",text:"Mixed; frequent ups and downs create instability.",score:1,compat:"low"},{letter:"D",text:"Strained, inconsistent, and often stressful.",score:0,compat:"low"}]},
+  {topic:"Shared Life Goals and Values",text:"How aligned are your long-term visions (e.g., marriage, children, career paths, or where to live)?",options:[{letter:"A",text:"We are perfectly aligned and share the same core vision.",score:3,compat:"high"},{letter:"B",text:"We agree on the big things but have minor differences in the details.",score:2,compat:"medium"},{letter:"C",text:"We have significant differences that we haven't fully reconciled.",score:1,compat:"low"},{letter:"D",text:"We are fundamentally misaligned or avoid talking about the future.",score:0,compat:"low"}]},
+  {topic:"Financial Compatibility",text:"How do you and your partner approach money management and spending habits?",options:[{letter:"A",text:"We have a shared system and similar views on saving/spending.",score:3,compat:"high"},{letter:"B",text:"Our styles differ, but we've found a compromise that works.",score:2,compat:"medium"},{letter:"C",text:"We frequently disagree on how money should be handled or spent.",score:1,compat:"low"},{letter:"D",text:"Money is a source of constant tension or a \"taboo\" topic we avoid.",score:0,compat:"low"}]},
+  {topic:"Fondness and Admiration",text:"How often do you express genuine appreciation or \"small wins\" to each other?",options:[{letter:"A",text:"Daily; we frequently acknowledge what we love about each other.",score:3,compat:"high"},{letter:"B",text:"Occasionally; we appreciate each other but don't always say it.",score:2,compat:"medium"},{letter:"C",text:"Rarely; we tend to focus more on what needs to be fixed.",score:1,compat:"low"},{letter:"D",text:"Almost never; I can't remember the last time we exchanged a compliment.",score:0,compat:"low"}]},
+  {topic:"External Boundaries",text:"How well do you navigate the influence of \"outsiders\" like in-laws or friends on your relationship?",options:[{letter:"A",text:"We are a united front and set healthy boundaries together.",score:3,compat:"high"},{letter:"B",text:"Generally well, though family or friends cause occasional stress.",score:2,compat:"medium"},{letter:"C",text:"We often struggle to agree on how much influence others should have.",score:1,compat:"low"},{letter:"D",text:"External relationships cause a major rift in our bond.",score:0,compat:"low"}]},
+  {topic:"Shared Meaning and Rituals",text:"Do you have shared \"rituals\" (e.g., weekly date nights, morning coffee, holiday traditions) that feel special to you?",options:[{letter:"A",text:"Yes, we have many rituals that give our relationship a unique identity.",score:3,compat:"high"},{letter:"B",text:"We have a few, but they sometimes fall by the wayside.",score:2,compat:"medium"},{letter:"C",text:"We don't really have traditions; we just go with the flow.",score:1,compat:"low"},{letter:"D",text:"Our lives feel like two separate tracks running side-by-side.",score:0,compat:"low"}]},
+  {topic:"Support for Personal Growth",text:"How does your partner react when you want to pursue a new interest, hobby, or career change?",options:[{letter:"A",text:"They are my biggest cheerleader and encourage my growth.",score:3,compat:"high"},{letter:"B",text:"They are generally supportive but sometimes worry about the change.",score:2,compat:"medium"},{letter:"C",text:"They seem indifferent or occasionally feel threatened by my growth.",score:1,compat:"low"},{letter:"D",text:"They actively discourage me or make me feel guilty for changing.",score:0,compat:"low"}]}
+];
+
+let currentQ=0,selectedIdx=null,answers=[];
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function startQuiz(){currentQ=0;answers=[];renderQuestion();showScreen('quiz');}
+function renderQuestion(){
+  selectedIdx=null;
+  const q=questions[currentQ];
+  document.getElementById('q-topic').textContent=q.topic;
+  document.getElementById('q-text').textContent=q.text;
+  document.getElementById('progress-label').textContent=`Question ${currentQ+1} of ${questions.length}`;
+  document.getElementById('progress-bar').style.width=`${(currentQ/questions.length)*100}%`;
+  const oc=document.getElementById('options');oc.innerHTML='';
+  q.options.forEach((opt,i)=>{
+    const btn=document.createElement('button');btn.className='option-btn';
+    btn.innerHTML=`<span class="opt-letter">${opt.letter}</span><span>${opt.text}</span>`;
+    btn.onclick=()=>selectOption(i);oc.appendChild(btn);
+  });
+  const nb=document.getElementById('next-btn');
+  nb.textContent=currentQ===questions.length-1?'See My Results ♥':'Continue →';
+  nb.classList.remove('enabled');
+  const card=document.getElementById('question-card');card.style.animation='none';card.offsetHeight;card.style.animation='';
+}
+function selectOption(idx){
+  selectedIdx=idx;
+  document.querySelectorAll('.option-btn').forEach((b,i)=>b.classList.toggle('selected',i===idx));
+  document.getElementById('next-btn').classList.add('enabled');
+}
+function nextQuestion(){
+  if(selectedIdx===null)return;
+  answers.push({qIdx:currentQ,optIdx:selectedIdx});currentQ++;
+  if(currentQ<questions.length)renderQuestion();else showResults();
+}
+function getScoreDesc(pct){
+  if(pct>=85)return"Strong compatibility patterns 🌸";
+  if(pct>=70)return"Good foundation with room to grow 💕";
+  if(pct>=55)return"Some friction worth exploring 🔍";
+  if(pct>=40)return"Notable challenges in key areas 💬";
+  return"Significant areas to work through together 🤍";
+}
+function showResults(){
+  let total=0;answers.forEach(a=>{total+=questions[a.qIdx].options[a.optIdx].score;});
+  const pct=Math.round((total/(questions.length*3))*100);
+  document.getElementById('score-pct').textContent=`${pct}%`;
+  document.getElementById('score-desc').textContent=getScoreDesc(pct);
+  const list=document.getElementById('recap-list');list.innerHTML='';
+  answers.forEach((a,i)=>{
+    const q=questions[a.qIdx],opt=q.options[a.optIdx];
+    const label=opt.compat==='high'?'High':opt.compat==='medium'?'Medium':'Low';
+    const div=document.createElement('div');div.className='recap-item';
+    div.innerHTML=`<div class="recap-q-header"><span class="recap-num">${i+1}</span><span class="recap-topic">${q.topic}</span></div><div class="recap-question">${q.text}</div><div class="recap-answer ${opt.compat}"><span class="recap-answer-letter">${opt.letter}</span><span style="flex:1">${opt.text}</span><span class="compat-badge">${label}</span></div>`;
+    list.appendChild(div);
+  });
+  showScreen('results');
+}
+</script>
+</body>
+</html>
